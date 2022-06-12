@@ -1,0 +1,5 @@
+__pycache__
+api_development_venv/
+.env
+alembid_db/
+alembic.ini
