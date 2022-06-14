@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: pulling git repo
-        uses: actions/checkot@v2
+        uses: actions/checkout@v2
       - name: say hello
         run: echo "Hello there..."
       - name: say goodbye
