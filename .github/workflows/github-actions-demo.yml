@@ -50,7 +50,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [build]
-    enviroment:
+    environment:
       name: production
     steps:
       - name: pulling git repo
