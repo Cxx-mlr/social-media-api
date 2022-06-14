@@ -2,6 +2,7 @@ import psycopg
 from psycopg.rows import dict_row
 import json
 from pydantic import EmailStr
+from config import settings
 
 class Posts:
     def __init__(self, conn):
@@ -144,17 +145,14 @@ class Votes:
         self.create()
 
 
-with psycopg.connect(host='localhost',
-                     dbname='fastapi_database',
-                     user='postgres',
-                     password='PasswordUser357',
+with psycopg.connect(host=settings.DB_HOST,
+                     dbname=settings.DB_NAME,
+                     user=settings.DB_USER,
+                     password=settings.DB_PASSWORD,
                      row_factory=dict_row) as conn:
     
-    Votes(conn).update()
-
-    exit()
     Users(conn).update()
-    print()
     Posts(conn).update()
+    Votes(conn).update()
 
 exit()

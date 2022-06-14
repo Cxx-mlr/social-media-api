@@ -35,15 +35,12 @@ def vote_post(vote: schemas.Vote, current_user: models.User = Depends(oauth2.get
         conn.commit()
 
         if vote.dir == 1:
-            print('dir is 1')
             if post_dict:
-                print('Found vote 1')
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail=f'User {current_user.user_id} has already voted on posts {vote.post_id}'
                 )
             else:
-                print('Not found votes in post')
                 try:
                     conn.execute(
                         query="""INSERT INTO votes (post_id, user_id) VALUES (%s, %s);""",
@@ -54,18 +51,15 @@ def vote_post(vote: schemas.Vote, current_user: models.User = Depends(oauth2.get
                     return {'message': str(e)}
                 else:
                     conn.commit()
-                    return {'message': 'Successfully voted in post'}
+                    return {"post_id": vote.post_id, "user_id": current_user.user_id}
 
         elif vote.dir == 0:
-            print('dir is 0')
             if not post_dict:
-                print('Not found votes')
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail='Vote does not exists'
+                    detail='Yo can not unvote this post'
                 )
             else:
-                print('Found votes 1')
                 try:
                     conn.execute(
                         query="""DELETE FROM votes WHERE post_id=%s AND user_id=%s;""",
@@ -76,4 +70,4 @@ def vote_post(vote: schemas.Vote, current_user: models.User = Depends(oauth2.get
                     return {'message': str(e)}
                 else:
                     conn.commit()
-                    return {'message': 'Successfully deleted vote'}
+                    return {"post_id": vote.post_id, "user_id": current_user.user_id}

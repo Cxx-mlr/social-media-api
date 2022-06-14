@@ -11,7 +11,7 @@ import time
 from pydantic import EmailStr
 from .config import settings
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
@@ -35,9 +35,9 @@ def get_payload(token: str):
     else:
         return payload
 
-def get_user(p_key: str, value) -> models.User:
+def get_user(p_key: str, value, db=None) -> models.User:
     query = sql.SQL("""SELECT * FROM users WHERE {p_key}=%s;""").format(p_key=sql.Identifier(p_key))
-    conn = get_db()
+    conn = db
     try:
         cur = conn.cursor()
         user_dict = cur.execute(
@@ -53,8 +53,8 @@ def get_user(p_key: str, value) -> models.User:
         if user_dict != None:
             return models.User(**user_dict)
 
-def authenticate_user(email: EmailStr, password: str) -> models.User:
-    user = get_user(p_key='email', value=email)
+def authenticate_user(email: EmailStr, password: str, db=None) -> models.User:
+    user = get_user(p_key='email', value=email, db=db)
     if not user:
         return False
     if not utils.verify_password(plain_password=password, hashed_password=user.password):
@@ -78,14 +78,14 @@ def verify_access_token(token: str = Depends(oauth2_scheme)):
     else:
         return token_data
 
-def get_current_user(token_data: TokenData = Depends(verify_access_token)):
+def get_current_user(token_data: TokenData = Depends(verify_access_token), db=Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail='Could not validate credentials',
         headers={'WWW-Authenticate':'Bearer'}
     )
 
-    user = get_user(p_key='user_id', value=token_data.user_id)
+    user = get_user(p_key='user_id', value=token_data.user_id, db=db)
     if not user:
         raise credentials_exception
     

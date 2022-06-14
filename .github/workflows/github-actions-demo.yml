@@ -1,0 +1,14 @@
+name: Build and Deploy Code
+
+on: [push, pull_request]
+
+jobs:
+  job1:
+    runs-on: windows-latest
+    steps:
+      - name: pulling git repo
+        uses: actions/checkot@v2
+      - name: say hello
+        run: echo "Hello there..."
+      - name: say goodbye
+        run: echo "Goodbye"
