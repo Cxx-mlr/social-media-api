@@ -9,7 +9,7 @@ jobs:
       - name: pulling git repo
         uses: actions/checkout@v3
       - name: set up python3.9.5
-      - uses: actions/setup-python@v4
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9.5'
           architecture: 'x64'
