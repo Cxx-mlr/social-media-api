@@ -26,9 +26,8 @@ def get_test_db():
     except Exception as e:
         raise Exception('Connecting to database failed...\nerror: {}'.format(str(e)))
     else:
+        print('TEST Database connection was succesfull!!')
         return testconn
-    finally:
-        exit()
 
 @pytest.fixture
 def session():
