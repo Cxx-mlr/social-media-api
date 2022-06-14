@@ -8,8 +8,6 @@ def test_root(client):
     response = client.get('/')
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {'message': 'Hello World'}
-    print(f"\n--Response: {response.json()}")
-    print(f"--Headers: {response.headers['x-process-time']}")
 
 @pytest.mark.parametrize(
     argnames='email, password, status_code',
@@ -25,7 +23,6 @@ def test_add_user(client, email: str, password: str, status_code: int):
 
     assert new_user.email == email
     assert response.status_code == status_code
-    print(f"\n--Response: {new_user}")
 
 @pytest.mark.parametrize(
     argnames="email, password, status_code",
@@ -41,9 +38,6 @@ def test_login_user(test_user, client, email: str, password: str, status_code: i
     payload = get_payload(token=token.access_token)
     assert payload["user_id"] == test_user["user_id"]
     assert token.token_type == "bearer"
-
-    print(f"\n--Token: {token}")
-    print(f"""\n--Payload: {payload}""")
 
 @pytest.mark.parametrize(
     argnames="email, password, status_code",

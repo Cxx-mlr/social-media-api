@@ -13,22 +13,21 @@ from app.oauth2 import create_access_token
 from app.schemas import Token
 
 def get_test_db():
-    while True:
-        try:
-            testconn = psycopg.connect(
-                host="localhost",
-                dbname="fastapi_database",
-                user="postgres",
-                password="PasswordUser357",
-                port="5432",
-                row_factory=dict_row
-            )
-        except Exception as e:
-            print('Connecting to database failed')
-            print('error:', e)
-            time.sleep(3)
-        else:
-            return testconn
+    try:
+        testconn = psycopg.connect(
+            host="localhost",
+            dbname="fastapi_database",
+            user="postgres",
+            password="PasswordUser357",
+            port="5432",
+            row_factory=dict_row
+        )
+    except Exception as e:
+        raise Exception('Connecting to database failed...\nerror: {}'.format(str(e)))
+    else:
+        return testconn
+    finally:
+        exit()
 
 @pytest.fixture
 def session():
