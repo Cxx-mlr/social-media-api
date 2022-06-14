@@ -7,7 +7,6 @@ from fastapi import status
 def test_root(client):
     response = client.get('/')
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {'message': 'Hello World'}
 
 @pytest.mark.parametrize(
     argnames='email, password, status_code',
