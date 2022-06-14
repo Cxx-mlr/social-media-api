@@ -11,15 +11,16 @@ from psycopg.rows import dict_row
 import time
 from app.oauth2 import create_access_token
 from app.schemas import Token
+from app.config import settings
 
 def get_test_db():
     try:
         testconn = psycopg.connect(
-            host="localhost",
-            dbname="fastapi_database",
-            user="postgres",
-            password="PasswordUser357",
-            port="5432",
+            host=settings.DB_HOST,
+            dbname=settings.DB_NAME,
+            user=settings.DB_USER,
+            password=settings.DB_PASSWORD,
+            port=settings.DB_PORT,
             row_factory=dict_row
         )
     except Exception as e:
