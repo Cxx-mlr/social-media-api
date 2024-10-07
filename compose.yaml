@@ -1,0 +1,17 @@
+name: psql-db-service
+
+services:
+  db:
+    image: postgres
+    container_name: psql
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - PGUSER=postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+    external: true
