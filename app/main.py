@@ -1,23 +1,29 @@
-from fastapi import FastAPI, Request
-from .routers import post, user, auth, vote
-import time
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+from app.core.config import settings
+from app.api.main import api_router
 
-app.include_router(router=auth.router)
-app.include_router(router=post.router)
-app.include_router(router=user.router)
-app.include_router(router=vote.router)
+from contextlib import asynccontextmanager
 
-@app.middleware('http')
-async def add_process_time_header(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    proccess_time = time.time() - start_time
+from app.models import User, Post, Vote
+from app.core.db import init_db
 
-    response.headers['X-Process-Time'] = str(proccess_time)
-    return response
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
 
-@app.get('/')
-def root():
-    return {'message':'Successfully deployed from CI/CD pipeline'}
+app = FastAPI(
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    lifespan=lifespan,
+)
+
+app.include_router(api_router, prefix=settings.API_V1_STR)
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app)
+    
+# clear; uv run python -m app.main
