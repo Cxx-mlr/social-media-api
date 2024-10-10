@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.core.db import engine
 from app.core.security import ALGORITHM
@@ -15,6 +15,8 @@ from jwt import InvalidTokenError
 from pydantic import ValidationError
 
 from typing_extensions import Generator, Annotated
+
+import uuid
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
@@ -37,7 +39,7 @@ def get_current_user(session: SessionDep, token: TokenDep):
             detail="Could not validate credentials",
         )
     
-    user = session.get(User, token_payload.sub)
+    user = session.get(User, uuid.UUID(token_payload.sub))
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
