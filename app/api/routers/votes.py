@@ -2,14 +2,13 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from sqlmodel import select, Session
 
 from app.api.deps import SessionDep, CurrentUserDep
-from app.models import Post, User, Vote, VoteDirection
+from app.models import Post, Vote, VoteDirection, VotePublic
 
 import uuid
 
 router = APIRouter()
-    
 
-@router.post(path="/{id}")
+@router.post(path="/{id}", response_model=VotePublic)
 def vote_post(
     session: SessionDep,
     current_user: CurrentUserDep,
