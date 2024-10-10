@@ -8,28 +8,43 @@ from app.api.deps import SessionDep, CurrentUserDep
 
 from typing_extensions import Annotated
 
+import uuid
+
 router = APIRouter()
 
 @router.get("/")
-async def read_all_users(session: SessionDep):
+async def read_users(session: SessionDep):
     users = session.exec(select(User))
     return users.all()
 
 @router.get("/me", response_model=UserPublic)
-async def read_users_me(current_user: CurrentUserDep):
+async def read_user_me(current_user: CurrentUserDep):
     return current_user
 
-@router.post("/", response_model=UserPublic)
-async def create_user(
+@router.post("/signup", response_model=UserPublic)
+async def register_user(
     session: SessionDep,
     user_in: Annotated[UserCreate, Body()]
 ):
-    user_in_db = session.exec(select(User).where(User.email == user_in.email)).first()
-    if user_in_db:
+    user = session.exec(select(User).where(User.email == user_in.email)).first()
+    if user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="The user with this email already exists in the system."
         )
 
-    user = crud.create_user(session=session, user_create=user_in)
+    user = crud.create_user(session=session, user_create=UserCreate.model_validate(user_in))
+    return user
+
+@router.get("/{user_id}", response_model=UserPublic)
+async def read_user_by_id(
+    session: SessionDep,
+    user_id: uuid.UUID
+):
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found."
+        )
     return user
