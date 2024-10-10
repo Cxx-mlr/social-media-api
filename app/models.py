@@ -15,6 +15,9 @@ class UserBase(SQLModel):
 class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=40)
 
+class UserRegister(UserBase):
+    password: str = Field(min_length=8, max_length=40)
+
 class UserPublic(UserBase):
     id: uuid.UUID
 
@@ -29,6 +32,8 @@ class Vote(SQLModel, table=True):
 
     user: "User" = Relationship(back_populates="votes")
     post: "Post" = Relationship(back_populates="votes")
+
+VotePublic = Vote
 
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
