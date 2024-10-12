@@ -6,9 +6,9 @@ from pydantic_core import MultiHostUrl
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file="../.env",
+        env_file=".env",
         env_ignore_empty=True,
-        extra="ignore"
+        extra="ignore",
     )
 
     API_V1_STR: str = "/api/v1"
@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "secret"
     POSTGRES_DB: str = "postgres"
+
+    FIRST_USER_EMAIL: str
+    FIRST_USER_PASSWORD: str
 
     @computed_field
     @property
