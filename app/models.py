@@ -50,6 +50,12 @@ class PostBase(SQLModel):
 class PostCreate(PostBase):
     pass
 
+class PostUpdate(PostBase):
+    pass
+
+class PostPublic(PostBase):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
 class Post(PostBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     published: Optional[bool] = Field(default=True, nullable=False)
@@ -59,8 +65,6 @@ class Post(PostBase, table=True):
     owner: User = Relationship(back_populates="posts")
 
     votes: List[Vote] = Relationship(back_populates="post")
-
-PostPublic = Post
 
 class Token(SQLModel):
     access_token: str
