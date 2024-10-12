@@ -1,16 +1,16 @@
 from fastapi import APIRouter, HTTPException, status, Body
 from sqlmodel import select, col
 
-from typing_extensions import Annotated
+from typing_extensions import Annotated, List
 
 from app.api.deps import SessionDep, CurrentUserDep
-from app.models import PostCreate, PostPublic, Post
+from app.models import PostCreate, PostPublic, Post, PostUpdate
 
 import uuid
 
 router = APIRouter()
 
-@router.post("/", response_model=PostPublic)
+@router.post("/", response_model=PostPublic, status_code=status.HTTP_201_CREATED)
 def create_post(
     session: SessionDep,
     current_user: CurrentUserDep,
@@ -29,7 +29,7 @@ def create_post(
 
     return post
 
-@router.get("/")
+@router.get("/", response_model=List[PostPublic], status_code=status.HTTP_200_OK)
 def read_posts(
     session: SessionDep,
     skip: int=0,
@@ -44,7 +44,7 @@ def read_posts(
     
     return posts
 
-@router.get("/me")
+@router.get("/me", response_model=List[PostPublic], status_code=status.HTTP_200_OK)
 def read_posts_me(
     session: SessionDep,
     current_user: CurrentUserDep,
@@ -61,7 +61,7 @@ def read_posts_me(
     
     return posts
 
-@router.get("/latest", response_model=PostPublic)
+@router.get("/latest", response_model=PostPublic, status_code=status.HTTP_200_OK)
 def read_latest_post(
     session: SessionDep
 ):
@@ -75,7 +75,7 @@ def read_latest_post(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No posts found for the current user.")
     return latest_post
 
-@router.get("/me/latest", response_model=PostPublic)
+@router.get("/me/latest", response_model=PostPublic, status_code=status.HTTP_200_OK)
 def read_latest_post_me(
     session: SessionDep,
     current_user: CurrentUserDep
@@ -91,7 +91,7 @@ def read_latest_post_me(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No posts found for the current user.")
     return latest_post
 
-@router.get("/{post_id}", response_model=PostPublic)
+@router.get("/{post_id}", response_model=PostPublic, status_code=status.HTTP_200_OK)
 def read_post_by_id(
     post_id: uuid.UUID,
     session: SessionDep
@@ -99,16 +99,16 @@ def read_post_by_id(
     posts = session.exec(
         select(Post)
             .where(Post.id == post_id)
-    ).all()
+    ).first()
 
     return posts
 
-@router.put("/{post_id}", response_model=PostPublic)
+@router.put("/{post_id}", response_model=PostPublic, status_code=status.HTTP_200_OK)
 def update_post_by_id(
     post_id: uuid.UUID,
     session: SessionDep,
     current_user: CurrentUserDep,
-    post_in: PostCreate,
+    post_in: PostUpdate,
 ):
     post = session.exec(
         select(Post)
@@ -130,7 +130,7 @@ def update_post_by_id(
 
     return post
 
-@router.delete("/{post_id}", response_model=PostPublic)
+@router.delete("/{post_id}", response_model=PostPublic, status_code=status.HTTP_200_OK)
 def delete_post_by_id(
     post_id: uuid.UUID,
     session: SessionDep,
@@ -149,7 +149,7 @@ def delete_post_by_id(
 
     return deleted
 
-@router.delete("/", response_model=PostPublic)
+@router.delete("/", response_model=List[PostPublic], status_code=status.HTTP_200_OK)
 def delete_posts_me(
     session: SessionDep,
     current_user: CurrentUserDep
