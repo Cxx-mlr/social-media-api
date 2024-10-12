@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from app.core.db import engine
 from app.core.security import ALGORITHM
@@ -35,8 +35,9 @@ def get_current_user(session: SessionDep, token: TokenDep):
         token_payload = TokenPayload(**payload)
     except (InvalidTokenError, ValidationError):
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"}
         )
     
     user = session.get(User, uuid.UUID(token_payload.sub))

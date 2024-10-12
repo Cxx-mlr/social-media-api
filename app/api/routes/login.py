@@ -36,18 +36,5 @@ async def login_for_access_token(
 from fastapi import Request
 
 @router.post("/login/test-token", response_model=UserPublic)
-async def test_access_token(current_user: CurrentUserDep, request: Request):
-    print(request.headers)
+async def test_access_token(current_user: CurrentUserDep):
     return current_user
-
-from fastapi import Request
-from app.api.deps import get_current_user, TokenDep
-
-@router.post("/login/test")
-async def test_headers(
-    session: SessionDep,
-    request: Request,
-    token: TokenDep
-):
-    user = get_current_user(session=session, token=token)
-    return request.headers
