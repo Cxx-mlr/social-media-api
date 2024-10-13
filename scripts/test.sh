@@ -3,4 +3,7 @@
 set -e
 set -x
 
-uv pip compile pyproject.toml -o requirements.txt
+coverage run -m pytest tests
+coverage combine
+coverage report
+coverage html
