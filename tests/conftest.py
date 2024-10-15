@@ -74,7 +74,7 @@ def ensure_first_user_posts_exists(client: TestClient, first_user_auth: BearerAu
         assert create_post__response.status_code == status.HTTP_201_CREATED
 
 @pytest.fixture(scope="function")
-def ensure_first_user_posts_does_not_exists(client: TestClient, first_user_auth: BearerAuth):
+def ensure_first_user_posts_not_exists(client: TestClient, first_user_auth: BearerAuth):
     read_posts__response = client.get(f"{settings.API_V1_STR}/posts")
     assert read_posts__response.status_code == status.HTTP_200_OK
 
